@@ -19,7 +19,7 @@ docker-compose up --build
 
 This command will build and start the Docker containers for the frontend (Next.js), backend (Golang), and PostgreSQL database.
 
-The frontend will be accessible at [http://localhost:3000](http://localhost:3000), the backend at [http://localhost:8080](http://localhost:8080), and the PostgreSQL database at [localhost:5431](localhost:5431).
+The frontend will be accessible at [http://localhost:3001](http://localhost:3001), the backend at [http://localhost:8081](http://localhost:8081), and the PostgreSQL database at [localhost:5431](localhost:5431).
 
 ## Database Connection
 

@@ -1,12 +1,13 @@
 "use client";
 
-import { Fragment, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import { Recipient, useCreateRecipientsMutation } from "@/redux/services/recipientsApi";
 import Alert, { AlertProps } from "@/components/Alert";
 import { ErrorResponse } from "@/redux/services/mediaApi";
+import AdminLayout from "@/components/AdminLayout";
 
 const AddRecipientsPage = () => {
 
@@ -89,7 +90,7 @@ const AddRecipientsPage = () => {
     }, [showAlert]);
 
     return (
-        <Fragment>
+        <AdminLayout>
             <Breadcrumb pageName="Add Recipients" />
 
             {
@@ -175,7 +176,7 @@ const AddRecipientsPage = () => {
                     </div>
                 </div>
             </div>
-        </Fragment>
+        </AdminLayout>
     );
 };
 

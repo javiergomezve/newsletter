@@ -110,7 +110,7 @@ func (c *MediaController) create(ctx *gin.Context) {
 
 	media := &entities.Media{
 		FileName:    file.Filename,
-		ContentType: file.Header.Get("Location-Type"),
+		ContentType: file.Header.Get("Content-Type"),
 		Content:     bytes.NewReader(fileBytes),
 	}
 
@@ -165,7 +165,7 @@ func (c *MediaController) update(ctx *gin.Context) {
 	media := entities.Media{
 		ID:          mediaId,
 		FileName:    file.Filename,
-		ContentType: file.Header.Get("Location-Type"),
+		ContentType: file.Header.Get("Content-Type"),
 		Content:     bytes.NewReader(fileBytes),
 	}
 

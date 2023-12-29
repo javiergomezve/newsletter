@@ -93,6 +93,27 @@ func (r *PgSubscriberRepository) Delete(id string) error {
 	return r.db.Delete(&entities.Recipient{}, id).Error
 }
 
+func (r *PgSubscriberRepository) GetSubscribers() ([]*entities.Recipient, error) {
+	var modelSubscribers []models.Recipient
+	err := r.db.Where("status", "subscribed").Find(&modelSubscribers).Error
+	if err != nil {
+		return nil, err
+	}
+
+	entitySubscribers := make([]*entities.Recipient, len(modelSubscribers))
+	for index, modelSubscriber := range modelSubscribers {
+		entitySubscribers[index] = convertModelToEntityRecipient(modelSubscriber)
+	}
+	return entitySubscribers, nil
+}
+
+func (r *PgSubscriberRepository) Unsubscribe(email string) error {
+	return r.db.
+		Model(&entities.Recipient{}).
+		Where("email = ?", email).
+		Update("status", "unsubscribed").Error
+}
+
 func convertModelToEntityRecipient(modelRecipient models.Recipient) *entities.Recipient {
 	return &entities.Recipient{
 		ID:       fmt.Sprintf("%d", modelRecipient.ID),

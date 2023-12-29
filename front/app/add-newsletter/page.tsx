@@ -1,15 +1,21 @@
 "use client";
 
-import { Fragment, useEffect, useState } from "react";
-import ReactQuill from "react-quill";
+import { useEffect, useState } from "react";
 import "react-quill/dist/quill.snow.css";
 import { Newsletter, useCreateNewsletterMutation } from "@/redux/services/newslettersApi";
-import { useGetRecipientsQuery } from "@/redux/services/recipientsApi";
+import { useGetSubscribersQuery } from "@/redux/services/recipientsApi";
 import { ErrorResponse, useGetMediasQuery } from "@/redux/services/mediaApi";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import Alert, { AlertProps } from "@/components/Alert";
 import Checkbox from "@/components/Checkbox";
 import Loader from "@/components/common/Loader";
+import dynamic from "next/dynamic";
+import AdminLayout from "@/components/AdminLayout";
+
+const ReactQuill = dynamic(
+    () => import("react-quill"),
+    { ssr: false }
+);
 
 const defaultNewsletter = {
     subject: "",
@@ -31,7 +37,7 @@ const AddNewslettersPage = () => {
         data: recipients,
         isLoading: loadingRecipients,
         error: errorLoadingRecipients
-    } = useGetRecipientsQuery(null);
+    } = useGetSubscribersQuery(null);
 
     const {
         data: medias,
@@ -112,7 +118,7 @@ const AddNewslettersPage = () => {
 
         const response = await createNewsletter(newsletter);
         if ("error" in response) {
-            const error = response.error as ErrorResponse
+            const error = response.error as ErrorResponse;
 
             setShowAlert({
                 type: "danger",
@@ -124,7 +130,7 @@ const AddNewslettersPage = () => {
 
         setShowAlert({ type: "success", title: "Newsletter created successfully", message: "" });
 
-        // setNewsletter(defaultNewsletter);
+        setNewsletter(defaultNewsletter);
     };
 
     useEffect(() => {
@@ -144,7 +150,7 @@ const AddNewslettersPage = () => {
     }
 
     return (
-        <Fragment>
+        <AdminLayout>
             <Breadcrumb pageName="Add Newsletter" />
 
             {
@@ -278,7 +284,7 @@ const AddNewslettersPage = () => {
                     </div>
                 </form>
             </div>
-        </Fragment>
+        </AdminLayout>
     );
 };
 

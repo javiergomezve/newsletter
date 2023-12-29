@@ -2,8 +2,8 @@
 
 import { useGetRecipientsQuery } from "@/redux/services/recipientsApi";
 import Loader from "@/components/common/Loader";
-import { Fragment } from "react";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
+import AdminLayout from "@/components/AdminLayout";
 
 const RecipientsPage = () => {
 
@@ -22,7 +22,7 @@ const RecipientsPage = () => {
     }
 
     return (
-        <Fragment>
+        <AdminLayout>
             <Breadcrumb pageName="Recipients" />
 
             <div className="col-span-5 xl:col-span-3">
@@ -81,7 +81,7 @@ const RecipientsPage = () => {
                     </div>
                 </div>
             </div>
-        </Fragment>
+        </AdminLayout>
     );
 };
 

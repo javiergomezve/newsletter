@@ -44,8 +44,8 @@ func Run() error {
 
 	crypt := config.NewBcryptAdapter()
 	jwt := config.NewJwtAdapter(env.AccessTokenPrivateKey, env.AccessTokenPublicKey, env.AccessTokenExpiredIn)
-	s3 := config.NewAWSS3Uploader(env.AwsS3Region, env.AwsS3Bucket, env.AwsS3AccessKeyID, env.AwsS3SecretAccessKey)
-	ses, _ := config.NewSESService(env.AwsS3Region, "newsletter.javiergomezve@gmail.com")
+	s3 := config.NewAWSS3Uploader(env.AwsS3Region, env.AwsS3Bucket, env.AwsAccessKeyID, env.AwsSecretAccessKey)
+	ses, _ := config.NewSESService(env.AwsS3Region, "newsletter.javiergomezve@gmail.com", env.FrontendUrl)
 	//credentialsFile := "path/to/credentials.json"
 	//gmailService, err := NewGmailService(credentialsFile)
 	//if err != nil {
@@ -74,6 +74,10 @@ func Run() error {
 	corsConfig := cors.DefaultConfig()
 	corsConfig.AllowOrigins = []string{"*"}
 	corsConfig.AllowCredentials = true
+	corsConfig.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}
+	corsConfig.AllowHeaders = []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"}
+	corsConfig.MaxAge = 300
+	corsConfig.ExposeHeaders = []string{"*"}
 
 	svr.Use(cors.New(corsConfig))
 

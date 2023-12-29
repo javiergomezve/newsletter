@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/google/uuid"
@@ -33,7 +34,8 @@ func (u *AWSS3Uploader) UploadFile(name string, file io.Reader) (string, error) 
 	fileURL := ""
 
 	sess, err := session.NewSession(&aws.Config{
-		Region: aws.String(u.Region),
+		Region:      aws.String(u.Region),
+		Credentials: credentials.NewEnvCredentials(),
 	})
 	if err != nil {
 		return fileURL, err

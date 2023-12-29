@@ -7,7 +7,8 @@ import (
 )
 
 type Env struct {
-	HttpPort string `map:"HTTP_PORT"`
+	HttpPort    string `map:"HTTP_PORT"`
+	FrontendUrl string `map:"FRONTEND_URL"`
 
 	DbUsername string `map:"DB_USERNAME"`
 	DbPassword string `map:"DB_PASSWORD"`
@@ -20,10 +21,10 @@ type Env struct {
 	AccessTokenPublicKey  string        `map:"ACCESS_TOKEN_PUBLIC_KEY"`
 	AccessTokenExpiredIn  time.Duration `map:"ACCESS_TOKEN_EXPIRED_IN"`
 
-	AwsS3Region          string `map:"AWS_S3_REGION"`
-	AwsS3Bucket          string `map:"AWS_S3_BUCKET"`
-	AwsS3AccessKeyID     string `map:"AWS_S3_ACCESS_KEY_ID"`
-	AwsS3SecretAccessKey string `map:"AWS_S3_SECRET_ACCESS_KEY"`
+	AwsS3Region        string `map:"AWS_S3_REGION"`
+	AwsS3Bucket        string `map:"AWS_S3_BUCKET"`
+	AwsAccessKeyID     string `map:"AWS_ACCESS_KEY_ID"`
+	AwsSecretAccessKey string `map:"AWS_SECRET_ACCESS_KEY"`
 }
 
 func NewEnv() (*Env, error) {
@@ -34,6 +35,12 @@ func NewEnv() (*Env, error) {
 		return &env, err
 	}
 	env.HttpPort = httpPort
+
+	frontendUrl, err := getEnv("FRONTEND_URL")
+	if err != nil {
+		return &env, err
+	}
+	env.FrontendUrl = frontendUrl
 
 	dbHost, err := getEnv("DB_HOST")
 	if err != nil {
@@ -106,17 +113,17 @@ func NewEnv() (*Env, error) {
 	}
 	env.AwsS3Bucket = awsS3Bucket
 
-	awsS3AccessKeyID, err := getEnv("AWS_S3_ACCESS_KEY_ID")
+	awsAccessKeyID, err := getEnv("AWS_ACCESS_KEY_ID")
 	if err != nil {
 		return &env, err
 	}
-	env.AwsS3AccessKeyID = awsS3AccessKeyID
+	env.AwsAccessKeyID = awsAccessKeyID
 
-	awsS3SecretAccessKey, err := getEnv("AWS_S3_SECRET_ACCESS_KEY")
+	awsSecretAccessKey, err := getEnv("AWS_SECRET_ACCESS_KEY")
 	if err != nil {
 		return &env, err
 	}
-	env.AwsS3SecretAccessKey = awsS3SecretAccessKey
+	env.AwsSecretAccessKey = awsSecretAccessKey
 
 	return &env, nil
 }

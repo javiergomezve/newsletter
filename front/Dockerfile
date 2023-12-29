@@ -1,50 +1,46 @@
-#FROM node:16-alpine AS base
-#WORKDIR /app
-#COPY package*.json ./
-#
-## ---- Dependencies ----
-#FROM base AS dependencies
-#RUN npm ci --only=production
-#
-## ---- Release ----
-#FROM base AS release
-#COPY --from=dependencies /app/node_modules ./node_modules
-#COPY . .
-#CMD npm start
+FROM node:18-alpine AS base
 
-
-FROM node:18-alpine as base
-RUN apk add --no-cache g++ make py3-pip libc6-compat
+FROM base AS deps
+RUN apk add --no-cache libc6-compat
 WORKDIR /app
-COPY package*.json ./
-EXPOSE 3000
 
-FROM base as builder
+COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
+RUN \
+  if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
+  elif [ -f package-lock.json ]; then npm ci; \
+  elif [ -f pnpm-lock.yaml ]; then yarn global add pnpm && pnpm i --frozen-lockfile; \
+  else echo "Lockfile not found." && exit 1; \
+  fi
+
+FROM base AS builder
 WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN npm run build
 
+RUN yarn build
 
-FROM base as production
+FROM base AS runner
 WORKDIR /app
 
-ENV NODE_ENV=production
-RUN npm ci
+ENV NODE_ENV production
 
-RUN addgroup -g 1001 -S nodejs
-RUN adduser -S nextjs -u 1001
-USER nextjs
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
 
-
-COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/public ./public
 
-CMD npm start
+RUN mkdir .next
+RUN chown nextjs:nodejs .next
 
-FROM base as dev
-ENV NODE_ENV=production
-RUN npm install
-COPY . .
-CMD npm run dev
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+USER nextjs
+
+EXPOSE 3000
+
+ENV PORT 3000
+
+ENV HOSTNAME "0.0.0.0"
+
+CMD ["node", "server.js"]

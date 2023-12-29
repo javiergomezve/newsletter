@@ -9,4 +9,6 @@ type RecipientRepository interface {
 	Save(recipients []*entities.Recipient) error
 	Update(recipient *entities.Recipient) error
 	Delete(id string) error
+	GetSubscribers() ([]*entities.Recipient, error)
+	Unsubscribe(email string) error
 }

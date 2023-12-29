@@ -17,6 +17,8 @@ type RecipientController struct {
 func (c *RecipientController) RouteSetup(rg *gin.RouterGroup) {
 	rg.GET("", c.index)
 	rg.POST("", c.create)
+	rg.GET("subscribers", c.subscribers)
+	rg.POST("unsubscribe", c.unsubscribe)
 	rg.GET("/:recipientId", c.show)
 	rg.PUT("/:recipientId", c.update)
 	rg.DELETE("/:recipientId", c.delete)
@@ -29,7 +31,7 @@ func NewRecipientController(recipientService *services.RecipientService) *Recipi
 }
 
 func (c *RecipientController) index(ctx *gin.Context) {
-	subscribers, err := c.recipientService.GetAllSubscribers()
+	recipients, err := c.recipientService.GetAllRecipients()
 	if err != nil {
 		log.Println(err)
 		abortWithInternalServerError(ctx)
@@ -38,7 +40,7 @@ func (c *RecipientController) index(ctx *gin.Context) {
 
 	successResponse(ctx, SuccessResponseOptions{
 		Code: http.StatusOK,
-		Data: subscribers,
+		Data: recipients,
 	})
 }
 
@@ -70,8 +72,6 @@ func (c *RecipientController) create(ctx *gin.Context) {
 		abortWithValidationError(ctx, errs)
 		return
 	}
-
-	log.Println("requestBody: ", requestBody)
 
 	if len(requestBody) == 0 {
 		abortWithValidationError(ctx, []InputError{{
@@ -114,7 +114,7 @@ func (c *RecipientController) update(ctx *gin.Context) {
 
 	updatedSubscriber.ID = subscriberId
 
-	err := c.recipientService.UpdateSubscriber(&updatedSubscriber)
+	err := c.recipientService.UpdateRecipient(&updatedSubscriber)
 	if err != nil {
 		log.Println("error updating subscriber: ", err)
 		abortWithInternalServerError(ctx)
@@ -129,7 +129,7 @@ func (c *RecipientController) update(ctx *gin.Context) {
 
 func (c *RecipientController) delete(ctx *gin.Context) {
 	subscriberId := ctx.Param("subscriberId")
-	err := c.recipientService.DeleteSubscriberByID(subscriberId)
+	err := c.recipientService.DeleteRecipients(subscriberId)
 	if err != nil {
 		log.Println("error deleting subscriber: ", err)
 		abortWithInternalServerError(ctx)
@@ -139,4 +139,41 @@ func (c *RecipientController) delete(ctx *gin.Context) {
 	successResponse(ctx, SuccessResponseOptions{
 		Code: http.StatusNoContent,
 	})
+}
+
+func (c *RecipientController) subscribers(ctx *gin.Context) {
+	subscribers, err := c.recipientService.GetSubscribers()
+	if err != nil {
+		log.Println(err)
+		abortWithInternalServerError(ctx)
+		return
+	}
+
+	successResponse(ctx, SuccessResponseOptions{
+		Code: http.StatusOK,
+		Data: subscribers,
+	})
+}
+
+type UnsubscribeRequest struct {
+	Email string `json:"email" binding:"required,email"`
+}
+
+func (c *RecipientController) unsubscribe(ctx *gin.Context) {
+	var requestBody UnsubscribeRequest
+
+	errs := validateRequest(ctx, &requestBody)
+	if errs != nil {
+		abortWithValidationError(ctx, errs)
+		return
+	}
+
+	err := c.recipientService.Unsubscribe(requestBody.Email)
+	if err != nil {
+		log.Println("recipientService.Unsubscribe ", err)
+		abortWithInternalServerError(ctx)
+		return
+	}
+
+	successResponse(ctx, SuccessResponseOptions{})
 }

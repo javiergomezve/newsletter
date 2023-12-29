@@ -11,9 +11,9 @@ import {
     useUpdateMediaMutation
 } from "@/redux/services/mediaApi";
 import Loader from "@/components/common/Loader";
-import Image from "next/image";
 import Modal from "@/components/Modal";
 import Alert, { AlertProps } from "@/components/Alert";
+import AdminLayout from "@/components/AdminLayout";
 
 const MediasPage = () => {
 
@@ -140,7 +140,7 @@ const MediasPage = () => {
     }
 
     return (
-        <Fragment>
+        <AdminLayout>
             <Modal
                 isOpen={!!mediaToDelete}
                 title={"Delete media"}
@@ -343,7 +343,7 @@ const MediasPage = () => {
                     </div>
                 </div>
             </div>
-        </Fragment>
+        </AdminLayout>
     );
 };
 

@@ -28,10 +28,26 @@ export const recipientApi = createApi({
             }),
             transformResponse: (response: { error: boolean; data: Recipient[] }) => response.data,
         }),
+        getSubscribers: builder.query<Recipient[], null>({
+            query: () => "/recipients/subscribers",
+            transformResponse: (response: { error: boolean; data: Recipient[] }) => response.data,
+        }),
+        unsubscribeRecipient: builder.mutation<null, string>({
+            query: (email) => ({
+                url: "recipients/unsubscribe",
+                method: "POST",
+                body: {email: email},
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            }),
+        }),
     }),
 });
 
 export const {
     useGetRecipientsQuery,
     useCreateRecipientsMutation,
+    useGetSubscribersQuery,
+    useUnsubscribeRecipientMutation,
 } = recipientApi;

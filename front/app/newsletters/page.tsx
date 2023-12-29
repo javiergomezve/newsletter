@@ -1,8 +1,8 @@
 "use client";
 
-import { Fragment } from "react";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import { useGetNewsLettersQuery } from "@/redux/services/newslettersApi";
+import AdminLayout from "@/components/AdminLayout";
 
 const NewslettersPage = () => {
 
@@ -11,7 +11,7 @@ const NewslettersPage = () => {
     } = useGetNewsLettersQuery(null);
 
     return (
-        <Fragment>
+        <AdminLayout>
             <Breadcrumb pageName="Newsletters" />
 
             <div className="flex flex-col gap-10">
@@ -32,7 +32,7 @@ const NewslettersPage = () => {
                             </div>
                             <div className="p-2.5 text-center xl:p-5">
                                 <h5 className="text-sm font-medium uppercase xsm:text-base">
-                                    Actions
+                                    Data
                                 </h5>
                             </div>
                         </div>
@@ -59,19 +59,14 @@ const NewslettersPage = () => {
                                         </p>
                                     </div>
 
-                                    <div className="flex items-center justify-center p-2.5 xl:p-5">
-                                        <button
-                                            onClick={() => {
-                                                // window.open(media.location, '_blank');
-                                            }}
-                                            // disabled={isDeleting || isCreating || isUpdating}
-                                        >
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                                 strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                                                <path strokeLinecap="round" strokeLinejoin="round"
-                                                      d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                                            </svg>
-                                        </button>
+                                    <div className="flex flex-col items-center justify-center p-2.5 xl:p-5">
+                                        <p className="text-black dark:text-white">
+                                            Recipients: {newsletter.recipients?.length}
+                                        </p>
+
+                                        <p className="text-black dark:text-white">
+                                            Attachments: {newsletter.attachments?.length}
+                                        </p>
                                     </div>
                                 </div>
                             )
@@ -79,7 +74,7 @@ const NewslettersPage = () => {
                     </div>
                 </div>
             </div>
-        </Fragment>
+        </AdminLayout>
     )
 };
 
